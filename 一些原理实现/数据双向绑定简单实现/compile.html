@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>compile 解析模块简单实现</title>
+</head>
+<style>
+  #template{
+    background-color: #e2e2e2; 
+    height: 40px;
+  }
+  #app{
+    background-color: #f00;
+  }
+</style>
+<body>
+  <!-- 
+    complile主要功能：解析模板指令，将变量替换成数据，然后初始化渲染页面，并将每个指令对应节点绑定更新函数，
+                     添加监听数据的订阅者，数据变化，收到通知，更新视图
+                实现：因为遍历解析的过程有多次操作dom节点，为提高性能和效率，会先将vue实例根节点的el转换成文档碎片fragment进行解析编译操作，
+                     解析完成，再将fragment添加回原来的真实dom节点中    
+   -->
+   <div id="template">
+     <div>99{{测试}}</div>
+     <div v-text='表达式' title='测试表达式' class="ce-cls">88</div>
+   </div> 
+   <div id="app"> </div>
+  <script>
+     function Compile(el){
+       this.$el = document.querySelector(el)  
+       if(this.$el){ 
+          this.node2Fragment(this.$el).then(res=>{ 
+            this.$fragment = res
+            this.init()
+            document.querySelector('#app').appendChild(this.$fragment) //追加至新节点
+          })  
+       }
+     }
+     Compile.prototype = {
+        node2Fragment:function(el){ 
+          return new Promise((resolve,reject)=>{
+            setTimeout(()=>{
+              let fragment = document.createDocumentFragment() , child; //创建虚拟节点接收Id下的template模板内容
+                  while(child = el.firstChild){//循环拿到所有的节点 
+                    fragment.appendChild(child)
+                  }
+              resolve(fragment)     
+            },2000)
+          }) 
+        },
+        init:function(){// 初始化处理dom上绑定的数据 
+          this.CompileElement(this.$fragment)
+        },
+        CompileElement:function(el){//遍历所有节点与子节点，查找花胡子语法与指令，并执行对应的方法进行编译
+          let childNodes = el.childNodes; 
+              for(let item of childNodes){  
+                  let text = item.textContent // 1.先处理文本 花括号
+                  let reg = /\{\{(.*)\}\}/; // 2.查找数据表达式（{{...}}）-使用正则查找
+                  this.compile(el)
+                  /* 指令与文本花胡子语法法处理
+                    if (this.isElementNode(el)) {//判断是否存在指令\自定义属性
+                        this.compile(el);//指令处理
+                    } else if (this.isTextNode(el) && reg.test(text)) { //判断是否为文本节点并且为花胡子语法
+                        this.compileText(el, RegExp.$1);//文本花胡子语法处理
+                    }
+                  */
+                  if(item.childNodes && item.childNodes.length){//处理子节点的节点
+                    this.CompileElement(item) 
+                  }  
+              } 
+        },
+        isElementNode:function(node){//判断是否为指令
+
+        },
+        isTextNode:function(node){//判断是否为文本节点...
+          
+        },
+        compile:function(node){//处理指令-->找到对应的指令，并调用对应的指令处理方法 
+          let nodeAttrs = node.attributes; //获取所有自定义属性
+              if(!nodeAttrs){
+                return
+              } 
+              for(let attr of nodeAttrs){// 处理自定义属性
+                let attrName = attr.name //获取指令名称
+                if(this.isDirective(attrName)){//判断是否为指令
+                  let exp = attr.name; //获取指令内容 
+                  let dir = attrName.substring(2); //去掉指令前缀v-  
+                  if(this.isEventDirective(dir)){//判断指令是否为事件类型
+                    //如v-on:click等，调用对应方法
+                    compileUtil.eventHandler(node,this.$vm,exp,dir) // 调用对应方法
+                  }else{ // 普通指令处理
+                    compileUtil[dir] && compileUtil[dir](node, this.$vm, exp);
+                  }
+                }
+               }
+        },
+        isDirective:function(attrName){ //判断是否为内置要求指令
+          if(attrName.indexOf('v-') !== -1){//简单模拟 
+            return true
+          }else{
+            return false
+          }
+        },
+        isEventDirective(attrName){//事件类型处理
+          
+        }
+     }  
+     var compileUtil = {//指令处理的集合方法
+        text:function(node,vm,exp){
+          console.warn('被调用',exp)
+          // this.bind(node,vm,exp,'text')
+        },
+        bind:function(node, vm, exp, dir) {// 监听数据，并更新函数的处理
+            var updaterFn = updater[dir + 'Updater'];//查找对应更新方法
+            updaterFn && updaterFn(node, vm[exp]);// 调用并 第一次初始化视图 
+            // new Watcher(vm, exp, function(value, oldValue) {// 实例化订阅者，此操作会在对应的属性消息订阅器中添加了该订阅者watcher
+            //   // 一旦属性值有变化，会收到通知执行此更新函数，更新视图
+            //     updaterFn && updaterFn(node, value, oldValue);
+            // });
+        }
+        // ...等等
+     }
+     var updater = {// 数据更新的方法集合
+        textUpdater:function(node,value){
+          node.textContent = typeof value == 'undefined' ? '':value
+        },
+        titleUpdater:function(node,value){
+          node.textContent = typeof value == 'undefined' ? '':value
+        },
+        // ...等等
+     }
+    new Compile('#template')  
+
+  </script>
+  <script>
+    /* 
+      核心：
+        1.通过document.createDocumentFragment()虚拟节点收集模板dom，生成新的文档片段
+        2.通过遍历每个节点及子节点，对对应指令及事件进行分类编译，调用对应方法。
+        3.指令的声明通过特点的前缀来完成(v- || @ || other-attr)
+        4.最后监听数据，绑定处理函数，通过订阅者来回调数据的变化通知。
+     */
+  </script>
+</body>
+</html>

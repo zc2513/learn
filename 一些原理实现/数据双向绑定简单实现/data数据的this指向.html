@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>this为何能直接调用data的方法</title>
+</head>
+<body>
+  <!-- 
+    问题：data的实际数据访问是通过this._data.name来访问data数据的
+    解决：主要是利用Object.defineProperty()劫持数据，在set与get的时候将属性的读写进行了一次修改，
+          将data的key暴露在了全局实例中，所以才才可以通过this来直接访问this._data的key值  
+   -->
+  <script>
+    var data = {
+          name:'zs',
+          age:99
+        }
+    function MVVM(options){
+      this.$options = options
+      let data = this._data = this.$options.data , me = this;
+      // 问题： 如果要访问当前vue对象的data数据需要，this._data.name 
+      Object.keys(data).forEach(key=>{// 解决： 让当前模板可以直接通过this.name访问属性值
+        me._proxy(key)
+      })
+    }
+    MVVM.prototype = {
+      _proxy:function(key){//将this._data的key暴露在全局
+        let me =  this;
+        Object.defineProperty(me,key,{
+          configurable:false,
+          enumerable: true,
+          get:function proxyGetter(){
+            return me._data[key]
+          },
+          set:function proxySetter(newVal){
+            me._data[key] = newVal
+          }
+        })
+      }
+    }
+    new MVVM({
+      el:'#app',
+      data
+    })
+  </script>
+</body>
+</html>

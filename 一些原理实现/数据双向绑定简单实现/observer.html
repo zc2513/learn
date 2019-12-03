@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>劫持监听所有数据</title>
+</head>
+<body>
+  <!-- 
+    目标：监听对象所有属性，包括子属性对象的属性
+    使用：利用Object.defineProperty()  监听数据,给所有属性都加上getter 与 setter 触发setter就可以监听到数据的改变
+   -->
+   <script>
+    var obj = {
+        name:'zs',
+        age:99
+      }
+      observer(obj)
+    function observer(data){
+      if(!data || typeof data !== 'object'){ 
+        return
+      }
+      // 取出所有数据进型遍历
+      Object.keys(data).forEach(key=>{ 
+        disposedata(data,key,data[key])
+      })
+    }
+    function disposedata(data,key,val){//处理传入的数据
+      observer(val)// 处理子元素为对象的情况
+      Object.defineProperty(data,key,{
+        enumerable: true,//可枚举
+        configurable:false,//不可以再定义
+        get:function(){
+          return val
+        },
+        set:function(newVal){
+          console.log('触发更新，监测到更新',newVal)
+          val = newVal
+        }
+      })
+    }
+    obj.name = 'ls'
+    obj.age = '8'
+   </script>
+</body>
+</html>

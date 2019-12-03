@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>apply-call 深入理解</title>
+</head>
+<body>
+  <!-- <script>//例1：call 
+      var num = 1
+      var obj = {
+              num: 2
+            }
+          function foo(num1) {
+            console.log(this.num,num1)
+          }
+          foo.call() //'1' undefined    默认this指向window
+          foo.call(obj) //'2' undefined 此时this指向obj对象
+          foo.call(obj, 3) //'2', '3'   此时this指向obj对象 除过参数一其它参数为方法foo的接收值
+
+
+      console.log('------------------------foo.call()------------------------------------')
+          foo()
+      console.log('------------------------foo.call(obj)------------------------------------')
+        var obj2 = {
+              num:2,
+              foo:function(num1){
+                console.log(this.num,num1)
+              }
+            }
+            obj2.foo() 
+      console.log('------------------------foo.call(obj,3)------------------------------------')
+        var obj2 = {
+          num:2,
+          foo:function(num1,c){
+            console.log(this.num,num1,...arguments)
+          }
+        }
+        obj2.foo(3,4,5)
+       /* call具体做的事情
+            1.修改了函数中this的指向为绑定的对象
+            2.执行了函数
+            3.如果第一个参数不定义，为null/undefined则this指向为window对象；
+            4.可以传递参数，（this,a,b,c,...）参传递的参数为列表形式
+        */  
+  </script> -->
+  <!-- <script>//call的模拟实现
+    console.log('--------------------------call的模拟实现--------------------------------------')
+      var num = 'window 环境下的num;'
+      var obj = {
+            num: 2
+          }
+      function foo(...num1) {
+        console.log(this.num,...num1)
+        return '返回值'
+      }
+    /* 模拟1：通过this指向，执行函数
+        思路：在函数原型上定义一个方法callTest，用来模拟call
+        Function.prototype.callTest = function(obj){ 
+          //注：this指向的是当前的调用函数：foo
+          obj.fn = this //通过传入的obj对象，将调用函数foo添加为obj的一个属性方法
+          obj.fn()      //调用当前函数fn->即foo()
+          delete obj.fn //最后删除obj函数的绑定的属性fn->this->foo 将obj还原
+        }
+        foo.callTest(obj)//相当于调用 foo.call(obj)
+    */ 
+
+    /* 模拟2 第一个参数，不传对象或者传空，指向window 
+        Function.prototype.callTest = function(obj){
+          obj = obj || window //判断有无参数，没有则指向window
+          obj.fn = this
+          obj.fn()
+          delete obj.fn
+        } 
+        foo.callTest(null,5) 
+    */  
+    /* 模拟3 可以传入参数，第一个参数后
+        Function.prototype.callTest = function(obj){
+            obj = obj || window //判断有无参数，没有则指向window
+            obj.fn = this
+          // 传入参数处理 
+            let args = []
+          // 参数从augumentsp[1]开始  --- es5语法实现 
+            for(let i=1 ; i<arguments.length;i++){
+              args.push(arguments[i])
+            } 
+          // obj.fn(args.join(','))//这样调用相当于把'8,9'字符串传给了方法，得到的结果不正确
+          eval('obj.fn('+args+')')
+          delete obj.fn
+        } 
+        foo.callTest(null,5,8,9) 
+    */  
+    /*模拟3  函数可以有返回值
+      Function.prototype.callTest = function(obj){
+          if(typeof this !== 'function'){
+            throw new Error('调用当前方法的对象不是函数');
+          }
+            obj = obj || window //判断有无参数，没有则指向window
+            obj.fn = this
+          // 传入参数处理 
+          // 参数从augumentsp[1]开始  --- es5语法实现start 
+            let args = []
+            for(let i=1 ; i<arguments.length;i++){
+              args.push(arguments[i])
+            } 
+            // obj.fn(args.join(','))//这样调用相当于把'8,9'字符串传给了方法，得到的结果不正确
+            let result = eval('obj.fn('+args+')') 
+          //es5 ---end
+            
+          //es6实现---start
+            let result = obj.fn(...arguments)
+          //es6 --- end
+
+          delete obj.fn
+          return result
+
+            
+        } 
+        foo.callTest(null,5,8,9) 
+     */
+  </script> -->
+  <!-- <script>//例2：apply模拟实现
+    var num = 'window 环境下的num;'
+    var obj = {
+          num: 2
+        }
+    function foo(...num1) {
+      console.log(this.num,...num1)
+      return '返回值'
+    }
+    Function.prototype.applyTest = function(obj,arr){
+      if(typeof this !== 'function'){
+        throw new Error('调用applyTest的对象不是函数')
+      }
+      obj = obj || window
+      obj.fn = this
+      let result
+      if(!arr) {//无参数
+        result = obj.fn()
+      }else{
+        /* es5实现
+          var args = [] 
+            for(let i=0; i<arr.length; i++){
+              args.push(arr[i])
+            }
+          result = eval('obj.fn('+args+')')
+         */    
+        result = obj.fn(...arr) // es6 
+      }
+      delete obj.fn
+      return result
+    }
+    let res = foo.applyTest(obj,['a','b'])
+    console.log(res)
+  </script> -->
+</body>
+</html>
