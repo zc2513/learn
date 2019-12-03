@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>无标题文档</title>
+<script language="javascript">
+//打印代码
+   function Print()   
+    {    
+        let newstr = document.getElementsByClassName('print_box')[0].innerHTML;
+        window.document.body.innerHTML = newstr;
+        let oldstr = window.document.body.innerHTML;
+        window.print();
+        window.location.reload();   //解决打印之后按钮失效的问题
+        window.document.body.innerHTML = oldstr;
+        return false;
+    }
+</script>
+</head>
+ 
+<body >
+<div><input type="button" value="打印" onclick="Print()" /></div>
+ <!--startprint-->
+    <div class="print_box">
+                <div style="page-break-after:always" >
+                    第一页打印内容
+                </div>
+                <div>
+                    第二页打印内容
+                </div>
+    </div>
+<!--endprint-->
+</body>
+</html> 

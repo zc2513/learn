@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        function save(num){
+            return new Promise((reslove,reject)=>{
+                var n = num;
+                setInterval(function(){
+                    n++
+                    reslove(n)
+                },3000)
+            })
+        }
+        save(9).then(res=>{
+            return res;
+        });
+        
+
+        
+        
+    </script>
+</body>
+</html>

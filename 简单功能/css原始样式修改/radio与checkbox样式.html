@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>原始样式修改</title>
+  <style>
+    html{
+      font-size: 14px;
+    }
+    input[type=radio]{
+      height: 1rem;
+      line-height: 1rem;
+      width: 1rem;
+      vertical-align: middle;
+      margin-left: 0.1rem;
+      background-color: transparent;    
+      -webkit-appearance: none;
+      border: 1px solid #999;
+      border-radius: 50%;
+      position: relative; 
+    }
+    input[type=radio]:checked:before{
+      content: "";
+      display: inline-block;
+      height: 1rem;
+      width: 1rem;
+      background: url('./a.jpg') no-repeat;
+      background-size: 100% 100%;
+      border-radius: 50%;
+      position: absolute;
+      top: -0.04rem;
+      left: -0.06rem;
+    }
+
+    input[type=checkbox]{
+      height: 1rem;
+      width: 1rem;
+      border: 1px solid #c3c3c3;
+      background-color: transparent;    
+      -webkit-appearance: none;
+      position: relative;
+      border-radius: 0.04rem;
+  }
+  input[type=checkbox]:checked:before{
+      content: "";
+      display: inline-block;
+      height: 1rem;
+      width: 1rem;
+      background: url('./a.jpg') no-repeat;
+      background-size: 100% 100%;
+      position: absolute;
+      top: -0.04rem;
+      left: -0.04rem;
+  }
+  </style>
+</head>
+<body>
+  <input type="radio">666
+  <input type="checkbox"> 
+</body>
+</html>
