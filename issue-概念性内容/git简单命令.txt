@@ -1,0 +1,39 @@
+全局：
+git config		全局配置
+git config --list	查看配置信息列表
+git help		获取帮助
+git help -a  | git help -g
+git config --global user.name 'zs'
+git config --global user.email a@163.com	
+--global全局个人信息配置会随着文件提交提交，
+如果要在某个特定的项目中使用其他名字或者电邮，只要去掉 --global 选项重新配置即可，新的设定保存在当前项目的.git/config文件里。
+
+
+基础：
+git clone http://	克隆远程库文件
+git clone git://grit.git mygrit 克隆远程库文件并放置到新建的mygrit文件夹
+git remote add origin http://...  绑定远程库地址
+git init 		初始化当前项目 
+git status		查看当前库文件状态
+git diff		查看工作目录与暂存区快照的具体修改内容
+git diff --cached	查看暂存区与上次提交的远程库文件的差异（具体修改内容）
+git add ./||<file>	提交文件到本地暂存库
+git commit -m 'one'	提交到本地库
+git pull 		更新远程文件
+git push -u origin master提交代码到绑定的远程库主线程
+git commit -a -m "msg" 	自动把所有已经跟踪过的文件暂存起来一并提交，从而跳过 git add 步骤
+git rm <file>		移除工作区文件，并从工作目录中删除指定文件，如果手动删除文件在git status时会出现在未暂存清单中
+git rm -f <file>	强制移除暂存区的文件
+git rm --cached <file>	从暂存区域移除,但不删除工作区文件
+git忽略文件配置：
+touch .gitignore ,生成“.gitignore”文件创建 .gitignore文件
+1.以注释符号 ＃ 开头的行都会被 Git 忽略。
+2.可以使用标准的 glob正则 模式匹配
+3.匹配模式最后跟反斜杠（/）说明要忽略的是目录，否则为文件
+4.要忽略指定模式以外的文件或目录，可以在模式前加上惊叹号（!）取反
+	# 此为注释 – 将被 Git 忽略
+	*.a # 忽略所有 .a 结尾的文件
+	!lib.a # 但 lib.a 除外
+	/TODO # 仅仅忽略项目根目录下的 TODO 文件，不包括 subdir/TODO
+	build/ # 忽略 build/ 目录下的所有文件
+	doc/*.txt # 会忽略 doc/notes.txt 但不包括 doc/server/arch.txt

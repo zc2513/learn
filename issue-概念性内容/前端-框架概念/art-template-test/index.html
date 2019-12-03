@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <!-- 
+        <script src="./js/es5-sham.js"></script>
+        <script src="./js/es5-shim.js"></script>
+        <script src="./js/json3.js"></script>
+     -->
+     <!-- <script src="./js/template.js"></script> -->
+    <script src="./js/art-template3.js"></script>
+</head>
+<body>
+    <div id="box"></div> 
+    
+    <script type="text/html" id="artId">   
+        <h1>{{title}}</h1>
+
+        {{each list}}
+            <div>{{$value + $index}}</div>
+        {{/each}}
+
+        <div>--------------------------------------遍历语法二及过滤器方法注册-------------------------------</div>
+
+        {{each list as item key}}
+            <div>{{ item }} {{ key | labelMap:'我是测试条件'}}</div>
+        {{/each}}
+
+
+        <div>--------------------------------------if else 语法-------------------------------</div>
+
+
+        {{if isAdmin}}
+            <div>我是true</div>
+        {{else}}
+            <div>我是false</div>
+        {{/if}}
+
+        <div>--------------------------------------三元表达式-------------------------------</div> 
+
+        <div>
+            {{isAdmin ? '我是三元表达式':'false'}}
+        </div>
+
+        <div>--------------------------------------include引入-------------------------------</div>
+        <div>
+            我是模板
+        </div> 
+        <div>
+            <h2>我是子模板：</h2>
+            {{include 'sunTmp'}} 
+        </div>
+    </script>
+    <script type="text/html" id="sunTmp">
+        <h4> 子模板如果引入必须在模板数据传入前执行{{users}} </h4> 
+        <div>
+            我是父模板传入的参数
+            <ul>
+                {{each users}}
+                <li>{{$value.name}}---{{$value.age}}</li>
+                {{/each}}
+            </ul>
+        </div>
+    </script>
+    <script>
+        template.helper('labelMap',function(val,params){//注：辅助方法需要在使用前注册
+            if(val == 1) {
+                return '一'+params
+            }else{
+                return val
+            }
+        })
+        let data = {
+            title: '基本例子',
+            isAdmin: true,
+            list: ['文艺', '博客', '摄影', '电影', '民谣', '旅行', '吉他'],
+            users:[
+                {name:'张三',age:14},
+                {name:'李四',age:30},
+            ]
+        };
+        template('artId',{users:data.users}) 
+        let html = template('artId',data)    
+        document.getElementById('box').innerHTML = html   
+        let con1 = template.render('artId',data) 
+    </script>
+   
+    
+</body>
+</html>

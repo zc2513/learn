@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app"></div>
+
+  <script src="https://cdn.bootcss.com/react/16.9.0-alpha.0/umd/react.development.js"></script>
+  <script src="https://cdn.bootcss.com/react-dom/16.8.6/umd/react-dom.development.js"></script> 
+  <script src="https://cdn.bootcss.com/babel-core/5.8.38/browser.min.js"></script>
+  <!-- 转换器脚本 ES6脚本放在script标签之中，但要注明type="text/babel" -->
+  <script type="text/babel"> 
+    class Input extends React.Component {// 这边使用到的是 JSX 语法，React 内部并没有实现双向绑定，所以这边使用了 input 的 change  事件来实现双向绑定
+      constructor(props) {
+        super(props)
+        this.state = {
+          message: 'Hello world'
+        }
+        this.handleChange = this.handleChange.bind(this)
+      }
+      handleChange(event) { 
+        this.setState({
+          message: event.target.value
+        }); 
+      }
+      render() {
+        var message = this.state.message;
+        return ( 
+          <div>
+            <input type = "text" value = { message } onChange = { this.handleChange } /> 
+            <h1> { message } </h1> 
+          </div>
+        );
+        // 方式二
+        // let ipt = React.createElement('input',{type:'text',value:message,onChange:this.handleChange})
+        // let h1 = React.createElement('h1',null,message)
+        // return React.createElement(
+        //     "div",
+        //     null, 
+        //     [ipt,h1]
+        // );
+      }
+    }
+
+    ReactDOM.render(<Input/>, document.getElementById('app'));
+  </script>
+</body>
+
+</html> 

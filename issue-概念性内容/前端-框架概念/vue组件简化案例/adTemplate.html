@@ -1,0 +1,162 @@
+{/* 
+  * 版本编号 : 3.5.3 
+  * 修改时间 : 2019/11/21 
+  * 修改人员 : 耿瑶 
+  * 修改内容 : TASK#3058 [前端开发] 根据需求替换运营图片和链接 
+  */}
+<style type="text/css">
+.ad-template-box .swiper-pagination-bullet-active{background:#fff}
+.ad-template-box .swiper-slide{overflow:hidden}
+.ad-template-box #ad-swiper{background-color:#fff;margin-top:.83rem}
+#ad-swiper .swiper-wrapper,#ad-swiper .swiper-slide{height:auto}
+#ad-swiper .usercenter-banner{position:relative;display:block;width:92%;margin:.5rem auto .5rem auto}
+.ad-template-box #ad-swiper .usercenter-banner .banner-bg{width:100%;border-radius:.4rem}
+.ad-template-box .banner-content-container{position:absolute;left:1rem;top:1rem}
+.ad-template-box #ad-swiper .banner-top-tip{position:absolute;left:0;top:0;background-color:rgba(255,244,116,1);padding:.55rem .9rem .3rem .3rem;border-bottom-right-radius:5rem;font-size:1.18rem;color:rgba(50,73,125,1);font-family:PingFangSC-Medium,sans-serif}
+.ad-template-box .plan-banner-container{position:absolute;left:2rem;top:2.5rem;color:#fff;font-family:PingFangSC-Medium,sans-serif}
+.ad-template-box .plan-banner-title{font-size:1.6rem}
+.ad-template-box .plan-banner-subtitle{font-size:1rem}
+.ad-template-box #ad-swiper .banner-icon{width:6rem;vertical-align:middle;margin-top:-.3rem;margin-left:.1rem}
+.ad-template-box #ad-swiper .disease-banner{top:1.4rem;left:2rem}
+.ad-template-box .disease-banner .plan-banner-title{line-height:1.4}
+.ad-template-box .op1v1-title-color{color:#048070}
+.ad-template-box #ad-swiper .banner-bg{top:1.45rem;left:3.5rem}
+.ad-template-box #ad-swiper .banner-bg .plan-banner-subtitle{font-size:1.1rem;margin:.15rem 0 .5rem 0}
+.ad-template-box #ad-swiper .trajectory{display:inline-block;width:6.915rem;height:1.5rem;font-size:1rem;border-radius:.8rem;background-color:#F5D67B;text-align:center;color:#18253D;font-family:PingFangSC-Medium}
+.ad-template-box #ad-swiper .trajectory-type1{width:5.915rem;padding:.3rem 0;font-size:1rem;text-align:center;height:auto}
+.star{position:absolute;width:2px;height:2px;border-radius:100%}
+.star-1{right:.5rem;top:2.6rem;animation:blink-star .6s infinite}
+.star-2{right:5.5rem;top:.5rem;animation:blink-star .7s infinite}
+.star-3{right:12.29rem;top:1.5rem;animation:blink-star .8s infinite}
+.star-4{right:3rem;top:2rem;animation:blink-star1 .8s infinite}
+@keyframes blink-star{from{background-image:radial-gradient(rgba(255,255,255,.3),rgba(255,255,255,0))}
+to{background-image:radial-gradient(rgba(255,255,255,.5),rgba(255,255,255,0))}
+}@keyframes blink-star1{from{background-image:radial-gradient(rgba(255,255,255,.8),rgba(255,255,255,0))}
+to{background-image:radial-gradient(rgba(255,255,255,.3),rgba(255,255,255,0))}
+}@keyframes blink-meteor-1{from{top:0rem;right:0rem;opacity:.5}
+to{top:4rem;right:3.5rem;opacity:1}
+}@keyframes blink-meteor-2{from{top:-1.5rem;right:2rem;opacity:0}
+to{top:1.5rem;right:7rem;opacity:1}
+}.icon-meteor-1{position:absolute;width:1.7rem;transform:rotate(180deg);animation:blink-meteor-1 .8s ease-in -2s infinite;z-index:1}
+.icon-meteor-2{position:absolute;width:2.5rem;transform:rotate(180deg);animation:blink-meteor-2 1s infinite}
+.ad-template-box .disease-banner .five-years-title{font-size:1.365rem;margin-bottom:.3rem}
+.ad-template-box #ad-swiper .thanksgiving-bg{left:1.1rem;top:1.5rem}
+.ad-template-box .thanksgiving-title{font-size:1.5rem;color:#683101;font-weight:900;font-family:Alibaba PuHuiTi}
+.ad-template-box .thanksgiving-subtitle{font-size:1.25rem;color:#683101;font-family:Alibaba PuHuiTi}
+.ad-template-box #ad-swiper .thanksgiving-btn{width:5.919rem;border-radius:1rem;font-size:1rem;color:#ffffff;background-color:#FF802B;text-align:center;padding:.3rem 0;text-align:center}
+.ad-template-box #ad-swiper .thanksgiving-banner-title{line-height:1.3;margin-bottom:.2rem}
+.consult{font-size:1.2rem;position:absolute;right:1.5rem;bottom:.5rem;color:#ffffff;background-color:#FA9146;border-radius:.5rem;padding:.5rem .5rem}
+.ad-template-box #ad-swiper .insurance-container{left:3.5rem}
+</style>
+<script type="text/x-template" id="ad-template">
+    <div class="ad-template-box">
+        <div class="swiper-container" id="ad-swiper" v-cloak>
+            <div class="swiper-wrapper">
+                <template  v-for="(item,index) in advertising">
+                    <div class="swiper-slide">
+                        <a :href="item.link" class="usercenter-banner">
+                        <img class="banner-bg" :src="item.banner"/>
+                        <template v-if="index == 'ClaimUserAD' || index == 'Disease' || index == 'UserTrajectory' || index == 'Uc1v1' || index == 'ThanksgivingAD'">
+                            <template v-if="index == 'ClaimUserAD'">
+                                <!-- 运营优享计划 -->
+                                <p class="banner-top-tip" v-text="item.claim_user_pay_banner?'前50名免费':'前50名限时秒杀'"></p>
+                                <div class="plan-banner-container">
+                                    <p class="plan-banner-title"  v-html="adContentInit + item.desc"></p>
+                                    <p class="plan-banner-subtitle">防癌测评|“赔”跑服务|专属客服|长险咨询|保单问诊</p>
+                                </div>
+                            </template>
+                            <template v-if="index == 'Disease'">
+                                <!--疾病精准推送广告-->
+                                <template v-if="advertising.Disease.link.split('?')[1].split('=')[0] != 'adType'">
+                                    <div class="plan-banner-container disease-banner">
+                                         <p class="plan-banner-title"  v-html="adContentInit + advertising.Disease.desc"></p>
+                                    </div>
+                                </template>
+                            </template>
+                            <template v-if="index == 'UserTrajectory'">
+                                <!--五周年活动页-->
+                                <div class="plan-banner-container disease-banner banner-bg">
+                                    <div class="plan-banner-title five-years-title">
+                                        <span>{{adContentInit}}很多人小时候怕成绩单</span><p>上班后怕体检报告，那你呢？</p>
+                                    </div>
+                                    <div class="trajectory trajectory-type1">立即查看</div>
+                                </div>
+                                <div class="star star-1"></div>
+                                <div class="star star-2"></div>
+                                <div class="star star-3"></div>
+                                <div class="star star-4"></div>
+                                <img class="icon-meteor-1" src="__PUBLIC__/insgeek-mobile4.0/img/themes/h5_2019/meteor_1_1.png" alt="insgeek提示您，图片加载失败了">
+                                <img class="icon-meteor-2" src="__PUBLIC__/insgeek-mobile4.0/img/themes/h5_2019/meteor_1_1.png" alt="insgeek提示您，图片加载失败了">
+                            </template>
+                            <template v-if="index == 'ThanksgivingAD'">
+                                <!--Thanksginving-->
+                                <div class="plan-banner-container thanksgiving-bg">
+                                    <div class="thanksgiving-banner-title" v-html="item.desc"></div>
+                                    <div class="thanksgiving-btn">立即抽取</div>
+                                </div>
+                            </template>
+                        </template>
+                        <template v-else>
+                            <div class="plan-banner-container disease-banner" >
+                                <p class="plan-banner-title" v-html="adContentInit + item.desc"></p>
+                            </div>
+                        </template>
+                        </a>
+                    </div>
+                </template>
+            </div>
+            <!-- 分页器 -->
+            <div class="swiper-pagination" style="display:block"></div>
+        </div>
+    </div>
+</script>
+<script>  
+    Vue.component('adtemplate', {
+        props: ['advertising', 'userRealSex', 'userRealName'],
+        template: '#ad-template',
+        data: function () {
+            return {
+                adNumber: 0,
+            }
+        },
+        computed: {
+            adContentInit: function () {
+                var gioSex = this.userRealSex;
+                var realName = this.userRealName;
+                var sexObj = ['', '先生', '女士'];
+                if (realName.length < 3) {
+                    truename = realName + sexObj[gioSex] + '，';
+                } else if (realName.length < 5) {
+                    truename = realName.slice(realName.length - 2, realName.length) + '，';
+                } else {
+                    truename = realName.slice(0, 4) + '...' + '，';
+                }
+                return truename;
+            },
+        },
+        mounted: function () {
+            this.$nextTick(function () {
+                this.adSwiperShow();
+            })
+        },
+        methods: {
+            /* 
+             * 广告位
+             * adNumber: 广告数量大于一条时以轮播图的形式展示
+             */
+            adSwiperShow: function () {
+                var adItem = Object.keys(this.advertising);
+                this.adNumber = Object.keys(this.advertising).length;
+                var adSwiper = {};
+                if (this.adNumber > 1) {
+                    var adSwiper = new Swiper('#ad-swiper', {
+                        autoplay: 5000,
+                        loop: true,
+                        initialSlide: 0,
+                    })
+
+                }
+            }
+        }
+    })
+</script>

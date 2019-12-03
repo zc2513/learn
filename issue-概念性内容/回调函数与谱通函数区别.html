@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>回调函数与普通函数的区别</title>
+</head>
+<body>
+  <!-- 
+    普通函数，被其他函数调用时，是在调用者内部直接写函数名调
+    回调函数，通常是作为参数传递给调用者，调用者并不知道自己调用的到底是什么
+    另外有一点，回调函数大多用于多线程的情况 
+    区别：普通函数与回调函数都是被其他函数调用的，不同之处在于调用者是否明确知道自己调用的到底是什么 
+   -->
+   <script>
+    //  例如
+      function fn1(){}
+      function fn2(){}
+
+      function callBack(){//此处callBack可以看作普通函数 原因如下
+        fn1() //此处callBack明确知道自己调用了函数:fn1
+      }
+
+      function callBack2(fn){//特点带有参数
+        if(fn && typeof fn == 'function') fn(); //此处callBack2并不知道自己到底调用的是什么，只知道自己调用了一个空参数(fn) fn参数为函数的时候就为回调函数
+      }
+
+      function callBack3(){//特点带有参数
+        callBack2(fn1) //调用函数callBack2，参数是fn1函数  此处，callBack2是普通函数，fn1是回调函数
+      }
+   </script>
+</body>
+</html>
