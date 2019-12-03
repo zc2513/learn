@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <!-- 
+    第一点，await命令后面的Promise对象，运行结果可能是rejected，所以最好把await命令放在try...catch代码块中。
+    第二点，多个await命令后面的异步操作，如果不存在继发关系，最好让它们同时触发。
+    第三点，await命令只能用在async函数之中，如果用在普通函数，就会报错。
+      例：  async function dbFuc(db) {
+              let docs = [{}, {}, {}]; 
+              docs.forEach(function (doc) {// 报错
+                await db.post(doc);
+              });
+            }
+      但是，如果将forEach方法的参数改成async函数，也有问题。
+      例：  async function dbFuc(db) {
+              let docs = [{}, {}, {}]; 
+              docs.forEach(function (doc) {//当前不会正常工作，原因是这时三个db.post操作将是并发执行，也就是同时执行，而不是继发执行
+                await db.post(doc);
+              });
+            }
+   -->
+  <script>
+    var times = [2000,3000,2000,1000,4000]
+
+    function fn(t){   
+      return new Promise(resolve=> setTimeout(e=>resolve(t),t)) 
+    } 
+
+    async function jf(times){// 属于继发，必须等上一个执行完成才能执行下一个 12s执行完
+      for(const item of times){//每次循环独立执行，完成后才能进行后面任务
+        const res = await fn(item).catch(err=>console.log(err))
+        console.log(res) 
+      }
+    }
+
+    // jf(times)
+
+    async function bf(){//属于并发 函数同时执行 4秒执行完
+      const vs = times.map(async item=>{
+        // 并发执行原因：map函数遍历async函数，由于async函数被立即执行并返回一个promise，所以可以被看做并行执行，
+        //所以forEach 也可以完成当前操作 
+        const res = await fn(item).catch(err=>console.log(err))
+        console.log(res)
+      }) 
+    } 
+    bf(times)    
+    
+  </script>
+</body>
+</html>

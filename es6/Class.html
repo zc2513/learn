@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <!-- 
+    ES6 的class可以看作只是一个语法糖，它的绝大部分功能，ES5 都可以做到。
+    新的class写法只是让对象原型的写法更加清晰、更像面向对象编程的语法而已。
+    ES6 的类，完全可以看作构造函数的另一种写法
+    ***-事实上，类的所有方法都定义在类的prototype属性上面。在类的实例上面调用方法，其实就是调用原型上的方法。
+    我们知道，`this`关键字总是指向函数所在的当前对象，ES6 又新增了另一个类似的关键字`super`，指向当前对象的原型对象。
+   -->
+  <!-- <script>//基本语法
+    /* // es5写发
+    function Point(x, y) {
+      this.x = x;
+      this.y = y;
+    } 
+    Point.prototype.toString = function () {
+      return '(' + this.x + ', ' + this.y + ')';
+    };*/
+
+    class Point {
+      constructor(x,y){
+        this.x = x
+        this.y = y
+      }
+      toString(){
+        return '(' + this.x + ', ' + this.y + ')';
+      }
+    }
+    var p = new Point(1, 2);
+    console.log(p.toString())
+    console.log(Point.prototype.constructor,`类本身就指向构造函数`)
+  </script> -->
+
+  <!-- <script>// ***-事实上，类的所有方法都定义在类的prototype属性上面。
+    
+    class Point {
+      constructor(){} 
+      toString(){} 
+      toValue(){}
+    }
+    // 等同于
+    Point.prototype = {
+      constructor(){},
+      toString(){},
+      toValue(){}
+    }
+    //在类的实例上面调用方法，其实就是调用原型上的方法
+    Class B{}
+    let b = new B();
+    b.constructor === B.prototype.constructor  //true
+  </script> -->
+  
+  <!-- <script>//取值函数（getter）与存值函数（setter）
+    class Person {
+      constructor(name){
+        this.name = name || 'zs'
+      }
+      get prop(){ 
+        console.log( `getter+${this.name}`)
+        return `getter+${this.name}`
+      }
+      set prop(val){
+        this.name = val
+        console.log('setter'+val)
+      }
+    }
+    let person = new Person() 
+    setTimeout(()=>person.prop,2000)
+    setTimeout(()=>person.prop = 999,5000) 
+  </script> -->
+
+  <!-- <script>// class私有方法与属性现有实现方式： 
+    // 方式一：
+      class Privates { //此种方式的命名不保险，在类的外部还可以调用到_bar
+        // 公有方法
+        foo(val){
+          this._bar(val)
+        }
+        // 私有方法
+        _bar(val){
+          return  this.age = val
+        }
+      }
+      
+      // 方式二：
+        class Privates2 {//通过call实现了私有--目前最保险的方式
+          foo(val){
+            bar.call(this,val)
+          }
+        }
+        function bar(val){
+          return this.age = val
+        }
+
+      //方式三 通过Symbol的唯一性实现私有属性，因为bar与age都是Symbol值，一般情况是无法获取到它们 - 但还是可以通过 reflect.ownKeys()拿到
+        const bar = Symbol('bar')
+        const age = Symbol('age')
+        class Privates3{
+          foo(val){
+            this[bar](val)
+          }
+          [bar](val){
+            return this[age]=baz
+          }
+        }
+  </script> -->
+
+  
+</body>
+</html>

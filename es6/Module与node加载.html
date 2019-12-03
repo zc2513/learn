@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>模块语法与加载实现</title>
+</head>
+<body>
+  <div> 一、模块语法 
+      <!-- 编译时理解： 
+        因为JavaScript是没有编译动作的，这里的"编译时"，个人倾向于称为"解析时"，相对于"运行时"而言的。
+        编译时加载：
+          ->例如：下面这样ES6代码要求foo.js必须存在，因为在”解析时“要立刻读进来接续看看foo.js里面代码格式正确不正确，import不能出现在if/else里。 
+            import foo from './foo.js'
+        运行时加载：
+          ->例如：如果是运行时，就可以像下面这样，编译时才不管foo.js存在不存在，只要这段代码格式没问题就好，当条件成立时才去读取foo.js 读取不到报错。
+            if (someCondition) { foo = require('./foo.js')}
+       -->
+      <!-- 
+        问题： 运行时加载与编译时加载的区别 
+            运行时加载：当运行到方法时，再去找方法的来源，进行加载执行。例如： if (someCondition) { foo = require('./foo.js')} 当条件成立时才去读取foo.js 读取不到报错。是在运行阶段执行的。
+              缺点：不能进行静态分析
+            编译时加载：在代码运行之前进行加载，如果没有找到要加载的代码就会报错，如果加载到的代码有错误，则会报错，是在代码编译阶段完成的。 
+              优点：使静态代码分析成为可能
+      <!-- 
+        1. ES6 之前，社区制定了一些模块加载方案，最主要的有 CommonJS 和 AMD 两种。前者用于服务器，后者用于浏览器
+        2. CommonJS模块 ->运行时加载 特点：全部加载，通过点语法获取需要的属性
+          例如： let { stat, exists, readFile } = require('fs');  let _fs = require('fs'); let stat = _fs.stat;
+        3.ES6加载方式：编译时加载”或者静态加载 特点：如果只加载需要的3个方法，其他方法不加载
+          即 ES6 可以在编译时就完成模块加载，效率要比 CommonJS 模块的加载方式高。
+          例如： import { stat, exists, readFile } from 'fs';
+       -->
+       <!-- import 
+        1.方法加载： import { a } from 'a.js'; 
+        2.模块加载: import语句会执行所加载的模块因此有如下写法:
+          ->例如： import 'lodash'; 此代码仅仅执行lodash模块，但是不输入任何值。 
+            如果多次重复执行同一句import语句，那么只会执行一次，而不会执行多次。也就是说，import语句是 Singleton(单例) 模式。
+        特点：由于import是静态执行，所以不能使用表达式和变量，这些只有在运行时才能得到结果的语法结构。
+          例如：
+              import { 'f' + 'oo' } from 'my_module'; // 报错
+              if (x === 1) {// 报错
+                import { foo } from 'module1';
+              } else {
+                import { foo } from 'module2';
+              }
+              let module = 'my_module';
+              import { foo } from module;// 报错
+          原因：三种写法都会报错，因为它们用到了表达式、变量和if结构。在静态分析阶段，这些语法都是没法得到值的。 
+        注意点：
+              目前通过Babel转码，CommonJS 模块的require命令和 ES6 模块的import命令，可以写在同一个模块里面，
+              但是最好不要这样做。因为import在静态解析阶段执行，所以它是一个模块之中最早执行的。
+              下面的代码可能不会得到预期结果。
+                例如：require('core-js/modules/es6.symbol');require('core-js/modules/es6.promise');import React from 'React';
+        -->
+        <!--模块的整理加载 ---使用（*）号指定一个对象，所有的输出值，都会挂载到当前指定的对象上面 
+          例如 a.js中：export function b(){} ;export function c(){}
+               outher.js中加载：import * as obj from './a.js'  console.log(obj.b,obj.c) 
+               此处就可以通过指定对象obj 调用a.js中的所有的方法了
+         -->
+         <!-- export default命令 
+            概念：指定导出的整个模块，在用export default导出模块，使用时可以指定任意名称为他的顶级名称
+                例如1：
+                  import-default.js中
+                    export default function () { console.log('import-default.js')} 
+                  other.js中 
+                    import customName from './export-default';
+                    customName(); // 'import-default.js'
+                注意：import命令后面，不使用大括号。
+                例如2：
+                  import-default.js中
+                    function  foo() { console.log('import-default.js')} 
+                    export default foo //此处foo函数的函数名foo，在模块外部是无效的。加载的时候，视同匿名函数加载。
+                  other.js中  
+                    import customName from './export-default';
+                    customName(); // 'import-default.js'  
+          -->
+          <!-- import() ---为解决运行时加载出现的新提案 
+            简介：import命令会被 JavaScript 引擎静态分析，先于模块内的其他语句执行(先加载),所以出现在条件语句中，就会报语法错误，
+                  因为是先加载，而不是运行到后加载报错，所以是语法错误，而非执行报错。
+                  也就是说，emport和export命令只能在模块的顶层，不能在代码块中，比如条件语句中
+                    例如：
+                      if(x >2){ import { a } from './modual.js'}  //语法错误
+                  这样的设计好处：有利于编译器提高效率
+                  缺陷：也导致无法在运行时加载模块。 在语法上，条件加载就不可能实现，如果import取代node的require方法，就形成障碍；
+                        因为require是运行时加载模，import命令无法取代require的动态加载功能。
+                    例如：if(a == '打印') { let print = require('../path.js') }
+                    此处：语句就是动态加载，require到底加载哪一个模块，只有运行时才知道。import命令做不到这一点。
+            引出：新提案，建议引入import()函数，完成动态加载。
+                如：import('模块加载位置')
+            特点：import()返回一个 Promise 对象。      
+                如：import('./a.js').then(module=>{
+                  module.xxx
+                }).catch(err=>{err})     
+            使用场景及注意点：
+                import()函数可以用在任何地方，不仅仅是模块，非模块的脚本也可以使用。它是运行时执行，也就是说，什么时候运行到这一句，就会加载指定的模块。
+                import()函数与所加载的模块没有静态连接关系，这点也是与import语句不相同。
+                import()类似于 Node 的require方法，区别主要是前者是异步加载，后者是同步加载。
+            require为异步加载，import()是同步加载->更容易把握加载完成后执行事件
+            适用场景：
+              （1）按需加载
+                  button.addEventListener('click', event => { 
+                    import('./dialogBox.js').then(res=>{
+                      console.log('加载完成后执行')
+                    })
+                  })
+              （2）条件加载
+                  if (condition) {
+                    import('moduleA').then(...);
+                  } else {
+                    import('moduleB').then(...);
+                  }
+              （3）动态的模块路径->import()允许模块路径动态生成。
+                  import(f()).then(...);
+            注意点：
+                  1.结构拿值
+                    import('./myModule.js')
+                    .then(({export1, export2}) => {
+                      // ...·
+                    });
+                  2.模块有default输出接口，可以用参数直接获得。
+                    import('./myModule.js')
+                    .then(myModule => {
+                      console.log(myModule.default);
+                    });
+                    使用具名输入的形式：
+                    import('./myModule.js')
+                    .then(({default: theDefault}) => {
+                      console.log(theDefault);
+                    });
+                  3.同时加载多个模块
+                    Promise.all([
+                      import('./module1.js'),
+                      import('./module2.js'),
+                      import('./module3.js'),
+                    ]).then(([module1, module2, module3]) => {});
+                  4.在 async 函数之中使用
+                    async function main() {
+                      const myModule = await import('./myModule.js');
+                      const {export1, export2} = await import('./myModule.js');
+                      const [module1, module2, module3] =
+                        await Promise.all([
+                          import('./module1.js'),
+                          import('./module2.js'),
+                          import('./module3.js'),
+                        ]);
+                    }
+                    main();
+           -->
+  </div>  
+  <div>二、加载实现
+    <!-- 
+      defer与async的区别是：defer要等到整个页面在内存中正常渲染结束（DOM 结构完全生成，以及其他脚本执行完成），才会执行；
+      async一旦下载完，渲染引擎就会中断渲染，执行这个脚本以后，再继续渲染。一句话，defer是“渲染完再执行”，
+      async是“下载完就执行”。另外，如果有多个defer脚本，会按照它们在页面出现的顺序加载，而多个async脚本是不能保证加载顺序的。
+    -->
+    <!-- 一、加载规则
+      1.浏览器对于带有type="module"的<script>，都是异步加载，不会造成堵塞浏览器，即等到整个页面渲染完，再执行模块脚本，等同于打开了<script>标签的defer属性。
+        <script type="module" src="./foo.js"></script> 等同于 <script type="module" src="./foo.js" defer></script>
+      2.<script>标签的async属性也可以打开，这时只要加载完成，渲染引擎就会中断渲染立即执行。执行完成后，再恢复渲染。
+        <script type="module" src="./foo.js" async></script>
+    -->
+    <!--二、 ES6 模块与 CommonJS 模块的差异
+      1.它们有两个重大差异：
+        -CommonJS 模块输出的是一个值的拷贝，ES6 模块输出的是值的引用。
+        -CommonJS 模块是运行时加载，ES6 模块是编译时输出接口。
+      2.差异一：CommonJS 模块输出的是值的(拷贝---不是引用，所以值不变)
+          例如1：
+            //lib.js
+              var counter = 3;
+              function incCounter() {counter++;}
+              module.exports = {
+                counter: counter,
+                incCounter: incCounter,
+              };
+            //main.js
+              var mod = require('./lib');console.log(mod.counter);  // 3
+                  mod.incCounter();
+                  console.log(mod.counter); // 3
+              可以看出，调用了自加方法后，值还是3， 所以CommonJs.js是值的拷贝。
+          上面代码说明，lib.js模块加载以后，它的内部变化就影响不到输出的mod.counter了。这是因为mod.counter是一个原始类型的值，会被缓存。除非写成一个函数，才能得到内部变动后的值。
+          例如2：
+            //lib.js
+              var counter = 3;
+              function incCounter() {counter++;}
+              module.exports = {
+                counter: function() {return counter}
+                incCounter: incCounter,
+              };
+            //main.js
+              var mod = require('./lib');console.log(mod.counter);  // 3
+                  mod.incCounter();
+                  console.log(mod.counter); // 4
+      3.差异二：es6模块的引用是值的引用
+          例如1：
+            //lib.js
+              export let counter = 3;
+              export function incCounter() {
+                counter++;
+              }
+            //main.js
+              import { counter, incCounter } from './lib';
+              console.log(counter); // 3
+              incCounter();
+              console.log(counter); // 4
+          ES6输入的模块变量是只读的    
+     -->
+  </div> 
+  <div>三、node加载
+    <!-- 
+      概述:Node 对 ES6 模块的处理比较麻烦，因为它有自己的 CommonJS 模块格式，与 ES6 模块格式是不兼容的。目前的解决方案是，将两者分开，ES6 模块和 CommonJS 采用各自的加载方案。
+      Node 要求 ES6 模块采用.mjs后缀文件名。也就是说，只要脚本文件里面使用import或者export命令，那么就必须采用.mjs后缀名。
+           require命令不能加载.mjs文件，会报错，只有import命令才可以加载.mjs文件。反过来，.mjs文件里面也不能使用require命令，必须使用import。
+     -->
+    <!-- 加载规则    
+      目前，Node 的import命令只支持加载本地模块（file:协议），不支持加载远程模块。
+        1.如果模块名不含路径，那么import命令会去node_modules目录寻找这个模块。
+          如：import 'baz';  import 'abc/123';
+        2.如果模块名包含路径，那么import命令会按照路径去寻找这个名字的脚本文件。
+          如：
+            import 'file:///etc/config/app.json'; //etc/config/app.json';
+            import './foo';
+            import './foo?search';
+            import '../bar';
+            import '/baz';
+          2.1:如果脚本文件省略了后缀名，比如import './foo'，Node 会依次尝试四个后缀名：./foo.mjs、./foo.js、./foo.json、./foo.node。
+          2.2:如果这些脚本文件都不存在，Node 就会去加载./foo/package.json的main字段指定的脚本。
+          2.3:如果./foo/package.json不存在或者没有main字段，那么就会依次加载./foo/index.mjs、./foo/index.js、./foo/index.json、./foo/index.node。
+          2.4:如果以上四个文件还是都不存在，就会抛出错误。
+    -->
+    两种模块的互相加载方式：
+      1.e6模块加载CommonJS模块 
+      1.CommonJS模块加载e6模块
+    <!--E6模块加载 CommonJS 模块(几种加载方式的异同) 
+        注：因es6是编译输出，commonJs是运行输出，所以import命令加载commonJS不允许使用如下写法
+          例: 错误写法--import { readFile } from 'fs';
+              错误原因：因：fs是 CommonJS 格式，只有在(运行时)才能确定readFile接口；
+                       而：import {readFile}命令要求(编译时)就确定这个接口;
+          例:正确写法：改为整体输入
+             ->import * as express from 'express';   const app = express.default();
+             ->import {default as express} from 'express';   const app = express();
+             ->import express from 'express';        const app = express(); 
+        1.module.exports 等同于 export default xxx
+          例如：
+            module.exports = { foo: 'hello', bar: 'world'}; 等同于export default { foo: 'hello', bar: 'world'}
+          当前模块的加载：
+            module.exports会被视为默认输出，即import命令实际上输入的是这样一个对象{ default: module.exports }。
+        2.一共有三种写法可以拿到CommonJs模块的module.exports
+          例如：
+            ->import baz from './a'; // baz = {foo: 'hello', bar: 'world'};
+            ->import {default as baz} from './a'; // baz = {foo: 'hello', bar: 'world'}; 
+            ->import * as baz from './a'; 
+              // baz = {
+              //   get default() {return module.exports;},
+              //   get foo() {return this.default.foo}.bind(baz),
+              //   get bar() {return this.default.bar}.bind(baz)
+              // }
+              第三种写法，可以通过baz.default拿到module.exports。
+          例2：
+            //b.js
+              module.exports = null;     
+            //es.js
+              import foo from './b';  //foo = null;
+              import * as bar from './b'; //bar = { default:null };
+          例3：
+            //c.js
+              module.exports = function two() {return 2;};
+            //es.js
+              import foo from './c'; foo(); //2
+              import * as bar from './c'; 
+                bar = { default:function (){return 2;} };
+                bar.default() //2
+                bar();  // throws, bar is not a function
+        3.CommonJS模块的输出缓存机制，在 ES6 加载方式下依然有效：
+          例如：// foo.js
+            module.exports = 123;
+            setTimeout(_ => module.exports = null);
+          注**:当前代码中，对于加载foo.js的脚本，module.exports将一直是123，而不会变成null。
+     -->
+    <!--CommonJS模块加载ES6模块 
+        1.CommonJS模块加载ES6模块，不能使用require命令，而要使用import()函数；ES6 模块的所有输出接口，会成为输入对象的属性。
+          例1：
+            //es.mjs
+              export default { bar: 'my-default' }
+            //cjs.js
+              const es_namespace = await import('./es.mjs'); 
+                  //es_namespace={ get default(){...} }
+                  //console.log(es_namespace.default); ->{ bar:'my-default' }
+          例2：
+            //es.js
+              export let foo = { bar:'my-default' };
+              export { foo as bar };
+              export function f() {};
+              export class c {};
+            //cjs.js
+              const es_namespace = await import('./es');
+                  //es_namespace = {
+                  //  get foo() {return foo;}
+                  //  get bar() {return foo;}
+                  //  get f() {return f;}
+                  //  get c() {return c;}
+                  //}
+      -->
+  </div>  
+</body>
+</html>

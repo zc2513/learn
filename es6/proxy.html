@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <!-- set: function(obj, prop, value,c) {  // 对象本身 key value proxy对象本身
+       get : function (pipeObject, fnName ,c) {// 对象本身 key proxy对象本身
+   -->
+  <script>
+     
+     /* var pipe = (function () {
+      return function (value) {
+        var funcStack = [];
+        var oproxy = new Proxy({} , {
+          get : function (pipeObject, fnName ,c) {// 对象本身 key proxy对象本身
+            if (fnName === 'get') {
+              return funcStack.reduce(function (val, fn) {  
+                return fn(val);
+              },value);
+            }   
+            funcStack.push(window[fnName]);
+            return oproxy;
+          }
+        }); 
+        return oproxy;
+      }
+    }());
+
+    var double = n => n * 2;
+    var pow    = n => n * n;
+    var reverseInt = n => n.toString().split("").reverse().join("") | 0; 
+    console.log(pipe(3).double.pow.reverseInt.get)  */  
+    function* g() {
+      yield 1;
+      console.log('throwing an exception');
+      throw new Error('generator broke!');
+      yield 2;
+      yield 3;
+    }
+    function log(generator) {
+      var v;
+      console.log('starting generator');
+      try {
+        v = generator.next();
+        console.log('第一次运行next方法', v);
+      } catch (err) {
+        console.log('捕捉错误', v);
+      }
+      try {
+        v = generator.next();
+        console.log('第二次运行next方法', v);
+      } catch (err) {
+        console.log('捕捉错误', v);
+      }
+      try {
+        v = generator.next();
+        console.log('第三次运行next方法', v);
+      } catch (err) {
+        console.log('捕捉错误', v);
+      }
+      console.log('caller done');
+    }
+  </script>
+</body>
+</html>
