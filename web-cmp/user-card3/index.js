@@ -4,7 +4,7 @@ const templateElem = document.createElement('template')
                 :host {
                     display: flex;
                     align-items: center;
-                    width: 450px;
+                    width: 400px;
                     height: 180px;
                     background-color: #d4d4d4;
                     border: 1px solid #d5d5d5;
@@ -20,7 +20,7 @@ const templateElem = document.createElement('template')
                     width: 160px;
                     height: 160px;
                     vertical-align: middle;
-                    border-radius: 5px;
+                    border-radius: 50%;
                 }
                 .container {
                     box-sizing: border-box;
