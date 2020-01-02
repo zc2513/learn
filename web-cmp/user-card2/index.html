@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>web-组件</title>
+</head>
+<body>  
+    <user-card
+    src="http://img.mp.itc.cn/upload/20160325/99c8fd5ab98f4c3a85db96d9ab1cebae_th.jpg"
+    name="web-组件"
+    email="yourmail@some-email.com"
+    ></user-card>
+</body>
+</html>
+
+ 
+<script> 
+    const templateElem = document.createElement('template')
+          templateElem.innerHTML = `
+            <style>
+                :host {
+                    display: flex;
+                    align-items: center;
+                    width: 450px;
+                    height: 180px;
+                    background-color: #d4d4d4;
+                    border: 1px solid #d5d5d5;
+                    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+                    border-radius: 3px;
+                    overflow: hidden;
+                    padding: 10px;
+                    box-sizing: border-box;
+                    font-family: 'Poppins', sans-serif;
+                }
+                .image {
+                    flex: 0 0 auto;
+                    width: 160px;
+                    height: 160px;
+                    vertical-align: middle;
+                    border-radius: 5px;
+                }
+                .container {
+                    box-sizing: border-box;
+                    padding: 20px;
+                    height: 160px;
+                }
+                .container > .name {
+                    font-size: 20px;
+                    font-weight: 600;
+                    line-height: 1;
+                    margin: 0;
+                    margin-bottom: 15px;
+                }
+                .container > .email {
+                    font-size: 12px;
+                    opacity: 0.75;
+                    line-height: 1;
+                    margin: 0;
+                    margin-bottom: 15px;
+                }
+                .container > .button {
+                    padding: 10px 25px;
+                    font-size: 12px;
+                    border-radius: 5px;
+                    text-transform: uppercase;
+                    cursor: pointer;
+                }
+                </style>
+                
+                <img class="image">
+                <div class="container">
+                    <p class="name"></p>
+                    <p class="email"></p>
+                    <button class="button">上传图片</button>
+                </div>`
+
+    const attrs =  ['src','name','email']
+    const doms = ['image','name','email','button']
+    class UserCard extends HTMLElement {
+        constructor() {
+            super();
+            this._shadow = this.attachShadow( { mode: 'closed' } );
+            this._content = templateElem.content.cloneNode(true);   
+            this.$img = this._content.querySelector('.image')
+            this.$name = this._content.querySelector('.name')
+            this.$email = this._content.querySelector('.email')
+            this._content.querySelector('.button').onclick=function(){
+                alert(999) 
+            }
+            this._shadow.appendChild(this._content); 
+        }
+        static get observedAttributes() { 
+            return attrs;
+        }
+        attributeChangedCallback(name, oldVal, newVal) {  
+            this[name] = newVal;
+            this.render();
+        }
+        render() {   
+            if(this.src){
+                this.$img.src = this.src 
+            }
+            if(this.name){
+                this.$name.innerHTML = this.name
+            }
+            if(this.email){
+                this.$email.innerHTML = this.email
+            } 
+        }
+    }
+    window.customElements.define('user-card', UserCard);
+</script>

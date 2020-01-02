@@ -13,6 +13,7 @@ git config --global user.email a@163.com
 git clone http://	克隆远程库文件
 git clone git://grit.git mygrit 克隆远程库文件并放置到新建的mygrit文件夹
 git remote add origin http://...  绑定远程库地址
+git remote -v 	查看链接上的仓库
 git init 		初始化当前项目 
 git status		查看当前库文件状态
 git diff		查看工作目录与暂存区快照的具体修改内容
