@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>子页面</title> 
+</head>
+<body> 
+    子页面
+    <div>
+        <span>接收的参数：</span><span id="sp"></span>
+    </div>
+    <button onclick="load()">子页面操作父页面</button>
+    <button onclick="toFather()">toFather --- 子页面向父页面传值</button>
+    <script type="text/javascript">
+        function load() {
+            parent.document.getElementById('text').innerHTML = '相互作用';
+        } 
+        window.addEventListener('message', function(event) {//接收参数 
+            document.getElementById('sp').innerHTML += event.data;
+        }, false);
+        function toFather() {
+            parent.postMessage('子窗口往父窗口传递数据','/');
+        }
+    </script>
+</body>
+</html>
+
