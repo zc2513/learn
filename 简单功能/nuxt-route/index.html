@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>nuxt路由规则-添加额外参数</title>
+</head>
+<body>
+    <script type='module'>
+        import routes from './route.js' 
+        import metas from './meta.js'   
+        function addRule(routes){
+            return routes.map(item=>{
+                let {name,children} = item
+                if(!!name){ 
+                    return {...item,...metas[name]}   
+                }
+                if(children && children.length){  
+                    return {...item,children:addRule(children)}   
+                }
+            }) 
+        } 
+        let newRoutes = addRule(routes) 
+        function addSort(newRoutes){
+            for(let item of newRoutes){
+                let {sole,children} = item
+                if(!sole && children && children.length){
+                    children.sort(({ sole: a }, { sole: b }) => a - b) 
+                    let {sole,meta} = children[0]
+                    item['sole'] = sole  
+                    if(!item.meta) item['meta'] = meta
+                    addSort(children)
+                } 
+            }
+        }  
+        addSort(newRoutes) 
+        newRoutes.sort(({ sole: a }, { sole: b }) => a - b)  
+        console.log(newRoutes) 
+    </script>
+</body>
+</html>
