@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>nuxt路由规则-添加额外参数</title>
+</head>
+<body>
+    <script type='module'>
+        import routes from './route.js' 
+        import metas from './meta.js'    
+
+       function latestRoutes(){
+            let fakeRoute = {} // 追加的无组件路由
+            function addRule(routes){//追加配置 
+                return routes.map(item=>{
+                    let {name,children,path} = item
+                    if(path.startsWith(':')){//默认让所有的动态路由在导航栏隐藏，对于有name的动态路由自行配置hidden:false让展示出来 
+                        item['hidden']=true
+                    }
+                    if(!!name){     
+                        let itemMeta = metas[name] 
+                        if(!itemMeta){
+                            console.warn(`警告：未在metas中找到key为 ${name} 的定义`)
+                        }  
+                        if(itemMeta.addTo){
+                            let names = name.includes('-') ? (name.split('-').slice(0,-1)).join('-'):''
+                            fakeRoute[names] = itemMeta.addTo
+                        } 
+                        if(children && children.length){ 
+                            return {...item,...itemMeta,children:addRule(children)}
+                        }else{
+                            return {...item,...itemMeta}   
+                        }
+                    }else if(children && children.length){   
+                        return {...item,children:addRule(children)}
+                    }
+                }) 
+            } 
+            let newRoutes = addRule(routes)  
+            for(let name in fakeRoute){//追加路由处理--只追加到三级路由
+                let names = name.split('-') 
+                newRoutes.forEach(e=>{ 
+                    if((e.path === `/${names[0]}` || e.path === name) && e.children){
+                        if(names.length === 1){//二级路由
+                            e.children = [...e.children,...fakeRoute[names.join('-')]]
+                        }
+                        if(names.length === 2){//三级路由
+                            e.children.forEach(item=>{
+                                if(item.path === name[2] && item.children ){
+                                    item.children = [...item.children,...fakeRoute[names.join('-')]]
+                                }
+                            })
+                        }   
+                    }
+                })
+            }  
+
+
+            function addSort(newRoutes){
+                for(let item of newRoutes){
+                    let {sole,children} = item
+                    if(!sole && children && children.length){//没有slot但是有子项的 
+                        let {sole,meta,addTo} = children[0]  
+                        item['sole'] = sole  
+                        if(!item.meta) item['meta'] = meta ? meta:{}  
+                        if(addTo)  delete children[0]['addTo'] 
+                        children.sort(({ sole: a }, { sole: b }) => a - b)  // 放到此处原因：数据第一次进入时存在父级别无sole问题
+                        addSort(children)
+                    } else if(children&&children.length){
+                        addSort(children)
+                    }
+                }
+            }  
+
+            addSort(newRoutes) 
+
+            newRoutes.sort(({ sole: a }, { sole: b }) => a - b)   
+
+            return newRoutes
+       }  
+        
+        console.log('结果',latestRoutes())
+    </script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title></title>
+</head>
+<body>
+	<script type="text/javascript">
+		let arr = [
+		    {   
+                'pid':0,
+		        'name': 'zs',
+		        'id': 14,
+		        'children': [
+		            { 'pid':14,'name': 'ls', 'id': 15 }
+		        ]
+		    },
+		    {
+                'pid':0,
+		        'name': 'wmz',
+		        'id': 18,
+		        'children': [
+		            { 
+                        'pid':18,
+                        'name': 'el', 
+                        'id': 26 ,
+                        'children': [
+                            {'pid':26, 'name': 'po', 'id': 456 },
+                            {'pid':26, 'name': 'io', 'id': 666 },
+                            {'pid':26, 'name': 'lgf', 'id': 999 }
+                        ]
+                    },
+		            { 
+                        'pid':18,
+                        'name': 'gf', 
+                        'id': 25 
+                    }
+		        ]
+		    }
+		
+		]
+ 
+        function getItem(id,arr){ 
+            for(let i=0; i<arr.length;i++){
+                let item = arr[i]  
+                if(item.id === id){   
+                    return item
+                }else if(item.children && item.children.length){ 
+                    let child= getItem(id,item.children)  
+                    if(child){
+                        item.children = []
+                        item.children.push(child)
+                        return item
+                    }
+                } 
+            }
+            return null
+        }
+
+        let data=  getItem(666,arr)
+
+        let bts = []
+        function metas({id,name,children}){ 
+            bts.push({id,name}) 
+            if(children){
+                for(let item of children){ 
+                    metas(item)
+                }
+            }
+        }
+        metas(data)
+        
+        bts.forEach((e,i)=>{ 
+            if(!i){
+                document.write(e.name) 
+            }else{
+                document.write(`---${e.name}`) 
+            }
+        }) 
+        
+	</script>
+</body>
+</html>
