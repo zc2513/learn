@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+		<script src="./zepto.js"></script>
+		<style>
+			#div1 {
+				width: 100px;
+				height: 100px;
+				background: #f1f1f1;
+			}
+			#modal {
+				width: 500px;
+				height: 300px;
+				border: 1px solid red;
+				float: left;
+				position: relative;
+				display: none;
+			}
+			video {
+				width: 500px;
+				float: left;
+			}
+			.control {
+				width: 100%;
+				height: 40px;
+				line-height: 40px;
+				display: flex;
+				position: absolute;
+				bottom: 0;
+				background: rgba(0, 0, 0, 0.5);
+			}
+			#info {
+				width: 100%;
+				height: 260px;
+				background: #e3e3e3;
+			}
+			.play {
+				width: 20px;
+				height: 20px;
+				margin-top: 10px;
+				margin-left: 10px;
+				background: url('./暂停1.jpg');
+				background-size: cover;
+			}
+			.stop {
+				width: 20px;
+				height: 20px;
+				margin-top: 10px;
+				margin-left: 10px;
+				background: url('./播放.jpg');
+				background-size: cover;
+			}
+			.rate {
+				width: 50px;
+				display: flex;
+				justify-content: space-around;
+				margin-left: 10px;
+			}
+			#one:hover,
+			#two:hover {
+				cursor: pointer;
+			}
+			.activeSpeed {
+				color: red;
+			}
+			.time {
+				margin-left: 10px;
+				font-size: 14px;
+			}
+			#speed {
+				width: 240px;
+				height: 5px;
+				margin: 17px 0 0 10px;
+				background: pink;
+			}
+			#currentSpeed {
+				width: 0;
+				height: 5px;
+				background: red;
+				position: relative;
+			}
+			#cicle {
+				width: 10px;
+				height: 10px;
+				border-radius: 10px;
+				position: absolute;
+				right: -5px;
+				top: -3px;
+				background: blue;
+				display: none;
+			}
+			.volume {
+				width: 20px;
+				height: 20px;
+				margin: 10px 0 0 10px;
+				background: url('./音量.jpg');
+				background-size: cover;
+				position: relative;
+			}
+			.volumeControl {
+				width: 5px;
+				height: 50px;
+				background: pink;
+				position: absolute;
+				bottom: 25px;
+				left: 7px;
+				display: none;
+			}
+			.volumnCurrent {
+				width: 5px;
+				height: 30px;
+				position: absolute;
+				bottom: 0;
+				background: red;
+			}
+			.fullScreen {
+				width: 20px;
+				height: 20px;
+				margin: 10px 0 0 10px;
+				background: url('./全屏.jpg');
+				background-size: cover;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="div1">假定视频列表放一张图片即可</div>
+		<div id="modal">
+			<div id="info">
+				<!-- 不使用默认样式不用属性 controls="controls" -->
+				<video id="video" src="./demo.mp4" poster="./teset.jpg"></video>
+			</div>
+			<div class="control">
+				<div class="play"></div>
+				<div class="rate">
+					<div id="one">x1</div>
+					<div id="two">x2</div>
+				</div>
+				<div class="time">
+					<span id="current">0:00</span>
+					<span>/</span>
+					<span id="totalTime">0:00</span>
+				</div>
+				<div id="speed">
+					<div id="currentSpeed">
+						<div id="cicle"></div>
+					</div>
+				</div>
+				<div class="volume">
+					<div class="volumeControl">
+						<div class="volumnCurrent"></div>
+					</div>
+				</div>
+				<div class="fullScreen" title="退出全屏"></div>
+			</div>
+		</div>
+		<video src="./demo.mp4" poster="./teset.jpg" controls="controls"></video>
+	</body>
+	<script>
+		$(function () {
+			$('.play').on('click', function () {
+				console.log(this.className)
+				// $('#cicle')[0].style.display = 'block'
+				if (this.className == 'play') {
+					// 启动播放
+					this.className = 'stop'
+					$('#video')[0].play()
+				} else {
+					// 暂停播放
+					this.className = 'play'
+					$('#video')[0].pause()
+				}
+			})
+			// 音量调出及控制
+			$('.volume').on('click', function () {
+				console.log($('.volumeControl'))
+				if ($('.volumeControl')[0].style.display == 'block') {
+					$('.volumeControl')[0].style.display = 'none'
+				} else {
+					$('.volumeControl')[0].style.display = 'block'
+				}
+			})
+			// 倍速样式
+			$('#one').on('click', function () {
+				$('#two').removeClass('activeSpeed')
+				$('#one').addClass('activeSpeed')
+				$('#video')[0].playbackRate = 1 // 速率调整
+			})
+			$('#two').on('click', function () {
+				$('#one').removeClass('activeSpeed')
+				$('#two').addClass('activeSpeed')
+				$('#video')[0].playbackRate = 2
+			})
+			// video相关
+			$('#video').on('timeupdate', function (event) {
+				getTime(Math.floor(event.srcElement.currentTime), Math.floor(event.srcElement.duration))
+			})
+			// 视频当前和视频总时长赋值
+			function getTime(current, total) {
+				$('#current').text(transTime(current))
+				$('#totalTime').text(transTime(total))
+				var bili = current / total
+				$('#currentSpeed')[0].style.width = bili * 240 + 'px'
+			}
+			// 进度球显示隐藏
+			$('#speed').on('mouseover', function () {
+				$('#cicle')[0].style.display = 'block'
+			})
+			$('#speed').on('mouseleave', function () {
+				$('#cicle')[0].style.display = 'none'
+			})
+			// 快进快退
+			$('#cicle').on('mousedown', function (event) {
+				console.log(event)
+				// 进度条快进
+				$('#cicle')[0].style.left = leftDistence + 'px'
+				// // 视频快进
+				// $('#video')[0].currentTime = (leftDistence / 240) * totalTime
+			})
+			// $('#speed').on('mouseup', function () {
+			// 	console.log('抬起')
+			// 	// 进度条快进
+			// 	$('#cicle')[0].style.left = leftDistence + 'px'
+			// 	// 视频快进
+			// 	$('#video')[0].currentTime = (leftDistence / 240) * totalTime
+			// })
+			var leftDistence = 0
+			$('#speed').on('click', function (event) {
+				console.log(event.offsetX)
+				leftDistence = event.offsetX
+				$('#cicle')[0].style.display = 'block'
+				$('#currentSpeed')[0].style.width = event.offsetX + 'px'
+				$('#cicle')[0].style.left = event.offsetX + 'px'
+				// $('#currentSpeed')[0].style.width = event.offsetX + 'px'
+			})
+			//时间转换
+			function transTime(value) {
+				var time = ''
+				var h = parseInt(value / 3600)
+				value %= 3600
+				var m = parseInt(value / 60)
+				var s = parseInt(value % 60)
+				if (h > 0) {
+					time = formatTime(h + ':' + m + ':' + s)
+				} else {
+					time = formatTime(m + ':' + s)
+				}
+				return time
+			}
+			//时间格式化
+			function formatTime(value) {
+				var time = ''
+				var s = value.split(':')
+				var i = 0
+				for (; i < s.length - 1; i++) {
+					time += s[i].length == 1 ? '0' + s[i] : s[i]
+					time += ':'
+				}
+				time += s[i].length == 1 ? '0' + s[i] : s[i]
+				return time
+			}
+			// 打开视频
+			$('#div1').on('click', function () {
+				$('#modal')[0].style.display = 'block'
+			})
+			// 退出全屏
+			$('.fullScreen').on('click', function () {
+				console.log('退出全屏')
+				$('#modal')[0].style.display = 'none'
+			})
+		})
+	</script>
+</html>
