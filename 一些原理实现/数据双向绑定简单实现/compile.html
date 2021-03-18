@@ -90,7 +90,7 @@
                   if(this.isEventDirective(dir)){//判断指令是否为事件类型
                     //如v-on:click等，调用对应方法
                     compileUtil.eventHandler(node,this.$vm,exp,dir) // 调用对应方法
-                  }else{ // 普通指令处理
+                  }else{ // 普通指令处理 
                     compileUtil[dir] && compileUtil[dir](node, this.$vm, exp);
                   }
                 }

@@ -1,0 +1,9 @@
+百度分享插件解决https环境下不生效说明：
+
+在node_modules中需要替换vshare文件夹
+
+
+注释：
+ 1.添加了static文件夹（百度分享的样式图片js等资源）
+ 2.修改了dist/vshare.js文件中“http://bdimg.share.baidu.com/static/api/js/share.js”
+   为“../static/api/js/share.js”
