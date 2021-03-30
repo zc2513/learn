@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<!-- <script src="./jquery/jquery-3.2.0.js"></script> -->
+	<script src="./Jcrop-WIP-2.x/js/jquery.min.js"></script>
+	<script src="./Jcrop-WIP-2.x/js/Jcrop.js"></script>
+	<link rel="stylesheet" href="./Jcrop-WIP-2.x/css/Jcrop.css">
+</head>
+<body>
+	<div id="img">
+		<img src="./1.jpg" alt="">
+	</div>
+	
+	<script type="text/javascript">
+	$(function () {
+		
+		$( '#img' ).on('cropmove cropend',function(e,s,c){
+			console.log( c );
+		});
+
+		$( '#img img' ).Jcrop({
+			setSelect: [ 100, 100, 100, 100 ]
+		});
+
+	});
+		
+	</script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>bts-timePicker</title>
+
+    <!-- jquery引入 -->
+    <script src="./nodeModule/jquery.js"></script>
+
+    <!-- css样式引入 -->
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/bootstrap-datetimepicker.min.css">
+
+    <!-- bootstrap的Js引入 -->
+    <script src="./nodeModule/bootstrap.min.js"></script>
+
+    <!-- bootstrap-timePickerJs的引入 -->
+    <script src="./js/bootstrap-datetimepicker.js"></script>
+    <script src="./js/bootstrap-datetimepicker.zh-CN.js"></script>
+</head>
+<style>
+    #box{
+        width: 600px;
+        height: 50px;
+        line-height: 50px;
+        margin: 100px auto;
+        background-color: #ccc;
+    }
+</style>
+<body>
+
+    <div id="box">
+         时间选择：
+        <input type="text" value="" id="datetimepicker">
+    </div>
+        
+    <script>
+        $('#datetimepicker').datetimepicker({
+            language: 'zh-CN',
+            format: "yyyy-mm-dd",
+            weekStart:0,
+            autoclose: true,
+            pickerPosition: "bottom-left",
+            startView:2,//月视图
+            minView: 2,//添加后只选择到日  
+            todayBtn: false
+        });
+    </script>
+
+</body>
+</html>
+<!-- 
+    使用方式：给需要的input框加上对应的id,使用js调用方法;
+    1.引入需要的css  bootstrap依赖的jquery  和timepicker的js文件;
+    2.如果当前文件用了字体图标需要将bootstrap的font文件夹复制粘贴过来；
+ -->
+ <!-- 
+     属性详解：
+     language:显示的语种，需要对应的语言包js文件支持;
+     format: input框显示的内容多少和格式;
+        ->三种可选格式[yyyy-mm-dd , yyyy-mm-dd hh:ii , yyyy-mm-dd hh:ii:ss]
+     autoclose:当选择一个日期之后是否立即关闭此日期时间选择器。
+     pickerPosition:控制选择框的显示位置
+        ->
+     startView：打开之后首先显示的视图。
+        ->值有5个，斜杠表示或者
+        ->分别是0/hour、1/day、2/month、3/year、4/decade，对应：分、时、日、月、年
+     minView属性：用来控制时间选择器的最小单位
+        ->０表示分钟（默认），１表示小时，而２表示天，我们把值设为２就不会再出现选择小时的页面了！
+     todayBtn属性：在true或者"linked",的时候选择框底部出现今天按钮；false不显示
+        ->true的时候点击今天按钮会将试图跳转到今天日期,linked当天日期则被选择;
+        ->(此属性的true和linked在打开autoclose时感觉不到区别)
+     keyboardNavigation:默认值: true; -是否允许通过方向键改变日期。
+  -->
+
+  <!-- 
+      方法类：
+        给日期时间选择器设置一个新的起始日期。
+            方法一： 可以给input的value直接绑定开始时间也能生效
+            方法二： $('#datetimepicker').datetimepicker('setStartDate', '2012-01-01');
+        给日期时间选择器设置结束日期。
+            $('#datetimepicker').datetimepicker('setEndDate', '2012-01-01');
+        使用当前输入框中的值更新日期时间选择器。
+            $('#datetimepicker').datetimepicker('update');
+   -->

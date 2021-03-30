@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>jquery_validata-Demo</title>
+</head>
+<style>
+    body {
+        font-family: Microsoft Yahei;
+        font-size: 15px;
+    }
+
+    fieldset {
+        width: 650px;
+        margin: 0 auto;
+    }
+
+    legend {
+        text-align: center;
+        font-size: 20px;
+    }
+
+    .item {
+        height: 56px;
+        line-height: 56px;
+        margin: 10px;
+    }
+
+    .item .item-label {
+        float: left;
+        width: 80px;
+        text-align: right;
+    }
+
+    .item-text {
+        float: left;
+        width: 240px;
+        height: 30px;
+        padding: 9px 25px 9px 5px;
+        margin-left: 10px;
+        border: 1px solid #ccc;
+        overflow: hidden;
+    }
+
+    .item-select {
+        float: left;
+        height: 30px;
+        border: 1px solid #ccc;
+        margin-left: 10px;
+        font-size: 14px;
+        padding: 6px 0px;
+    }
+
+    .item-file {
+        float: left;
+        height: 30px;
+        margin-left: 10px;
+        font-size: 14px;
+        padding: 6px 0px;
+    }
+
+    .item-submit {
+        float: left;
+        height: 30px;
+        width: 50px;
+        margin-left: 90px;
+        font-size: 14px;
+    }
+
+    input.error {
+        border: 1px solid #E6594E;
+    }
+
+    input.highlight {
+        border: 1px solid #7abd54;
+    }
+
+    label.error {
+        float: left;
+        height: 30px;
+        line-height: 30px;
+        font-size: 14px;
+        text-align: left;
+        margin-left: 5px;
+        padding-left: 35px;
+        color: red;
+        background: url('../image/error.png') no-repeat left center;
+    }
+
+    label.tip {
+        float: left;
+        height: 30px;
+        line-height: 30px;
+        font-size: 14px;
+        text-align: left;
+        margin-left: 5px;
+        padding-left: 35px;
+        color: #aaa;
+        background: url('../image/tip.png') no-repeat left center;
+        padding-left: 35px;
+    }
+
+    label.valid {
+        background: url('../image/valid.png') no-repeat left center;
+    }
+</style>
+
+<body>
+    <form action="www.nima/add/from" method="post" id="ff">
+        <fieldset>
+            <legend>表单验证Demo</legend>
+            <div class="item">
+                <label for="username" class="item-label">用户名:</label>
+                <input type="text" id="username" name="sname" class="item-text" placeholder="设置用户名" autocomplete="off" tip="请输入用户名">
+            </div>
+            <div class="item">
+                <label for="password" class="item-label">密码:</label>
+                <input type="password" id="spass" name="spass" class="item-text" placeholder="设置密码" tip="长度为6-16个字符">
+            </div>
+            <div class="item">
+                <label for="password" class="item-label">确认密码:</label>
+                <input type="password" name="spass2" class="item-text" placeholder="设置确认密码">
+            </div>
+            <div class="item">
+                <label for="phone" class="item-label">手机号码:</label>
+                <input type="text" id="phone" name="sphone" class="item-text" placeholder="输入手机号码" tip="请输入手机号码">
+            </div>
+            <div class="item">
+                <label for="saddress" class="item-label">所在地:</label>
+                <select name="saddress" class="item-select" required>
+                    <option value="">---请选择---</option>
+                    <option value="北京">北京</option>
+                    <option value="上海">上海</option>
+                    <option value="深圳">深圳</option>
+                </select>
+            </div>
+            <div class="item">
+                <label for="" class="item-label">爱好：</label>
+                	&nbsp;上网：<input type="checkbox" name="slike" value="上网" required minlength="2" /> 
+	                唱歌：<input type="checkbox" name="slike" value="唱歌" /> 
+	                编程：<input type="checkbox" name="slike" value="编程" /> 
+	                书法：<input type="checkbox" name="slike" value="书法" />
+                <div style='display: inline-block;'></div>
+            </div>
+            <div class="item">
+                <label for="semail" class="item-label">邮箱:</label>
+                <input type="text" id="semail" name="semail" class="item-text" placeholder="设置邮箱" autocomplete="off" tip="请输入邮箱">
+            </div>
+            <div class="item">
+                <label for="simage" class="item-label">头像:</label>
+                <input type="file" id="simage" name="simage" class="item-file">
+            </div>
+            <div class="item">
+                <input type="submit" id="btnFrom" value="提交" class="item-submit">
+            </div>
+        </fieldset>
+    </form>
+
+    <script src="http://static.runoob.com/assets/jquery-validation-1.14.0/lib/jquery.js"></script>
+    <script src="http://static.runoob.com/assets/jquery-validation-1.14.0/dist/jquery.validate.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("#ff").validate({ //表单验证使用；
+                debug: true, //是否验证完成提交表单-true不提交
+                onkeyup: null, //当丢失焦点时才触发验证请求
+                rules: {
+                    sname: { //表单的name属性
+                        required: true,
+                        rangelength: [4, 12],
+                        // remote: { //后台处理-返回一个Boolearn值
+                        //     url: "", //后台处理程序
+                        //     type: "post", //数据发送方式
+                        //     dataType: "json", //接受数据格式   
+                        //     data: { //要传递的数据
+                        //         username: function () {
+                        //             return $("#username").val();
+                        //         }
+                        //     }
+                        // }
+                    },
+                    spass: {
+                        required: true,
+                        rangelength: [6, 12]
+                    },
+                    spass2: {
+                        required: true,
+                        equalTo: '#spass' //表示和id="spass"的值相同
+                    },
+                    simage: { //文件后缀名称验证：需要引入js文件additional-methods.js
+                        required: true,
+                        // extension: 'gif|jpe?g|png'
+                    },
+                    semail: { //邮箱验证
+                        required: true,
+                        email: true
+                    },
+                    sphone: { //手机号码验证使用自己添加的表单验证信息
+                        required: true,
+                        phone: true
+                    },
+                    slike:{
+                    	required: true,
+                    }
+                },
+                messages: { //提示信息的修改;
+                    sname: {
+                        required: "请输入姓名",
+                        rangelength: $.validator.format("用户名长度在必须为：{0}-{1}之间"),
+                        // remote: "该用户名已存在！" //远程验证的返回信息
+                    },
+                    spass: {
+                        required: "请输入密码",
+                        rangelength: $.validator.format("密码长度在必须为：{0}-{1}之间")
+                    },
+                    spass2: {
+                        required: "请再次输入密码",
+                        equalTo: "两次输入的密码必须一致"
+                    },
+                    simage: {
+                        required: "请选择要上传的头像",
+                        // extension: "文件后缀名必须为jpg,jpeg,gif,png"
+                    },
+                    semail: { //邮箱验证
+                        required: "请填写地址",
+                        email: "邮箱格式不正确"
+                    },
+                    sphone: {
+                        required: "请输入手机号"
+                    },
+                    slike: { //验证可以书写到表单，也可以书写到方法中
+                        required: "最少选中两个"
+                    },
+                    saddress: {
+                        required: "请选择地址"
+                    }
+                },
+                errorPlacement: function(error, element) {
+                    if (element.is(":checkbox")){
+                    	let dom = element.parent().find('input')
+                        // error.appendTo(element.parent().next().parent().parent());
+                        error.appendTo(element.parent().find('div'));
+                    } else {
+                       error.appendTo(element.parent());//默认，这个必须些，不写会影响其他样式问题
+                    }
+                },
+            });
+            //自定义方法，完成手机号码的验证给jquery-validata添加验证方式的方法为addMentod 
+            //name:自定义方法的名称，method：函数体, message:错误消息
+            $.validator.addMethod("phone", function (value, element, param) {
+                // console.log(param)
+                //method方法中又有三个参数:value:被验证的值， element:当前验证的dom对象，param:参数(多个即是数组)
+                return new RegExp(/^1[3458]\d{9}$/).test(value);
+            }, "手机号码不正确");
+            $('#btnFrom').on('click',()=>{
+            	//decodeURIComponent 若需解码
+            	console.log($("input[name='simage']").val())
+            	if($('#ff').valid()){//表单验证通过后执行
+            	console.log($('#ff').serialize())
+            		alert('提交表单')
+            		console.log($('ff'))
+            		$('#ff').submit()
+            		// return false;
+            	}
+            })
+        });
+    </script>
+</body>
+
+<!--    参数的值的多种使用：
+        required: true 值是必须的。 
+        required: "#aa:checked" 表达式的值为真，则需要验证。 
+        required: function(){} 返回为真，表示需要验证。
+ -->
+
+</html>

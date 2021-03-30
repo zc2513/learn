@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../bootstrap/bootstrap/dist/css/bootstrap.min.css">
+    <title>modal_demo</title>
+    <style>
+        .cls{/*按钮样式*/
+            width: 200px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            color: #fff;
+            background-color: #333;
+            margin: 0 auto;
+            margin-top: 30px;
+        }
+        #myModalLabel{
+            text-align: center;
+            font-weight: 700;
+            color: #999;
+        }
+
+        .modal-content{
+            background-color: #eee;
+        }
+        .modal-header{
+            background-color: #fff;
+        }
+        .contentBody{
+            padding: 20px 10% 40px 10%;
+            
+        }
+        .contentBox{
+            background-color: #fff;
+            box-shadow:-2px -2px 6px #ccc; 
+        }
+        .tradeContent{
+            width: 100%;
+            display: flex;
+            background-color: #fff;
+            padding: 10px 0 0 0;
+            margin-top:10px;
+        }
+        .tradeContent .tradeLeft{
+            padding-top: 15px;
+            flex: 1;
+            text-align: right;
+        }
+        .tradeContent .tradeRight{
+            flex: 4;
+        }
+        .tradeContent .tradeRight ul{
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .tradeContent .tradeRight ul li {
+            text-align: left;
+            width: 25%;
+            height: 30px;
+            line-height: 30px;
+            overflow: hidden;
+        }
+        .tradeContent .tradeRight ul li input{
+            width: 14px;
+            height: 14px;
+        }
+
+
+        .issue {/*左右盒子伸缩布局*/
+            display: flex;
+            text-align: right;
+            background-color: #fff;
+            padding: 8px 0;
+            line-height: 30px;
+        }
+        .issueLeft{/*左侧盒子*/
+            flex: 2;
+            display: flex;
+        }
+        .issueRight{
+            flex: 3;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .issueLeft div{
+            width: 50%;
+        }
+        .issueLeft div:nth-of-type(1),.issueRight div:nth-of-type(1){
+            font-weight: 700;
+        }
+        .issueLeft div:nth-of-type(2),.issueRight div:nth-of-type(2){
+            text-align: center;
+            color: #999;
+        }
+        .issueRight div , .issueRight{
+            height: 30px;
+            line-height: 30px;
+        }
+        .issueRight div{
+            width: 33.33%;
+        }
+        .bulletinContent .left{
+            flex: 1;
+            font-weight: 700;
+        }
+        .bulletinContent .right{
+            flex: 4;
+            text-align: left;
+        }
+        .iptContent{
+            width: 90%;
+            margin: 0 auto;
+        }
+        textarea{
+            padding-left: 10px;
+            width: 100%;
+            height: 100px;
+            border: 0;
+            outline: none;
+            border: 1px solid #eee;
+        }
+     .search_input::-webkit-input-placeholder{/*取消默认文本框样式*/
+            color:#b6b6b6;
+        }
+        .search_input:-moz-placeholder{
+            color:#b6b6b6;
+        }
+        .search_input::-moz-placeholder{
+            color:#b6b6b6;
+        }
+        .search_input:-ms-input-placeholder{
+            color:#b6b6b6;
+        }
+        .iptFile{
+            margin: 0 auto;
+        }
+        .upDown{
+            justify-content:flex-start;
+        }
+        .iptButtom{
+            padding-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="cls" data-toggle="modal" data-target="#myModal"><!-- 样式可以使用按钮的样式-->
+    产品详情 
+</div>
+
+<!-- Modal -->
+<!-- .fade属性是动画淡入淡出效果不需要直接删除 -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document"><!-- modal-sm小模态，modal-lg大模态 -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" class="glyphicon glyphicon-remove"> </span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">协查通告详情</h4>
+            </div>
+            <div class="modal-body contentBody">
+                <div class="contentBox">
+                    <div class="tradeContent">
+                        <div class="tradeLeft">
+                            <label for=" trade" class="item-label">发送给：</label>
+                        </div>
+                        <div class="tradeRight">
+                            <ul>
+                                <li>
+                                    <input type="checkbox" name=" trade" value="公安机构" required minlength="2" />公安机构
+                                </li>
+                                <li>
+                                    <input type="checkbox" name=" trade" value="印章行业" />印章行业
+                                </li>
+                                <li>
+                                    <input type="checkbox" name=" trade" value="开锁行业" />开锁行业
+                                </li>
+                                <li>
+                                    <input type="checkbox" name=" trade" value="旅游行业" />旅游行业
+                                </li>
+                                <li>
+                                    <input type="checkbox" name=" trade" value="机修行业" />机修行业
+                                </li>
+                                <li>
+                                    <input type="checkbox" name=" trade" value="废旧金属行业" />废旧金属行业
+                                </li>
+                                <li>
+                                    <input type="checkbox" name=" trade" value="典当行业" />典当行业
+                                </li>
+                                <li>
+                                    <input type="checkbox" name=" trade" value="汽车租赁行业" />汽车租赁行业
+                                </li>
+                                <li>
+                                    <input type="checkbox" name=" trade" value="旧手机交易行业" />旧手机交易行业
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="issue">
+                        <div class="issueLeft">
+                            <div>
+                                发布人：
+                            </div>
+                            <div>
+                                测试数据
+                            </div>
+                        </div>
+                        <div class="issueRight">
+                            <div>
+                                发布时间：
+                            </div>
+                            <div>
+                                测试数据
+                            </div>
+                        </div>
+                    </div>
+                    <div class="issue">
+                        <div class="issueLeft">
+                            <div>
+                                发布单位：
+                            </div>
+                            <div>
+                                测试数据
+                            </div>
+                        </div>
+                        <div class="issueRight">
+                            <div>
+                                标题：
+                            </div>
+                            <div>
+                                测试数据
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bulletinContent issue">
+                        <div class="left">
+                            内容：
+                        </div>
+                        <div class="right">
+                            <div class="iptContent">
+                                <textarea name="" class="search_input" id="" placeholder="请输入内容..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="issue iptButtom">
+                        <div class="issueLeft">
+                            <div>
+                                上传附件：
+                            </div>
+                            <div>
+                                <div class="iptFile">
+                                    <input type="file">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="issueRight upDown">
+                            <div>
+                                <button type="button" class="btn btn-success">下载</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <script src="../bootstrap/jquery/dist/jquery.min.js"></script>
+    <script src="../bootstrap/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script>
+      /*   $('#myModal').on('shown.bs.modal', function () {//方式一打开模态框,事件触发底部注释！
+                $('#myInput').focus()
+            }) */
+        $('#myModal').modal({//方式二打开
+           // keyboard: false//控制ese键是否能够退出模态框;true 可以退出，false不能
+        })
+    </script>
+</body>
+</html>
+ <!-- 模态框的手动打开与隐藏命令：
+     $('#myModal').modal('show');
+     $('#myModal').modal('hide');
+     $('#myModal').modal('toggle')
+     -->

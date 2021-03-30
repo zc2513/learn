@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<script src="./jquery-3.2.0.js"></script>
+	<script src="./jquery.form.js"></script>
+</head>
+<body>
+	<form id="form">
+		<input type="text" name="uid"><br>
+		<input type="password" name="pwd"><br>
+		<input type="submit" value=" 提交 ">
+	</form>
+	<script>
+		$( 'input[type=submit]' ).on( 'click', function () {
+
+		console.log($("form").serialize())//直接使用此方法可以获取所以的name&vlue的拼接字符串
+
+			
+/* 	//直接使用ajax请求服务，需要获取用户输入的字段才能发送请求
+	$.ajax({
+				url: './02-index.php',
+				type: 'get',
+				data: {
+					uid:$("input[type=text]").val(),
+					password:$("input[type=password]").val(),
+				},
+				success: function ( info ) {
+					console.log(666);
+				}
+	})
+ */
+
+ 
+/* 			$( "#form" ).ajaxSubmit({
+				url: './01-index.php',
+				type: 'post',
+				success: function ( info ) {
+					console.log( info );
+				}
+			});
+ */
+
+
+			return false;
+		})
+	</script>
+</body>
+</html>

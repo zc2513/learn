@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>评论动态加载</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="jquery.js"></script>
+    <script type="text/javascript" src="template.js"></script>
+    <script type="text/html" id="resultTemplate">
+         {{each commentid as value i}}
+        <li class="comment">
+        <div class="left"><img src="{{value.userinfo.head}}"></div>
+        <div class="right">
+        <div><span>{{value.userinfo.nick}}</span>: <span>{{value.userinfo.timeDifference}}</span> </div>
+            <div>{{value.content}}</div>
+        </div>
+        </li>
+        {{/each}}
+    </script>
+    <script type="text/javascript">
+        $(function(){
+           $.ajax({
+               url: "http://coral.qq.com/article/1983169624/comment",
+               data:{
+                    commentid :'6280346786642608295',
+                    reqnum:20,
+                    tag:""
+               },
+               dataType:"jsonp",
+               jsonp:"callback",
+               jsonpCallback: "mainComment",
+               success:function(data){
+                var data=data.data;
+                var html=template("resultTemplate",data);
+                $("#contentList").html(html);
+               }
+            });
+           var reqnum=20;
+           $("#more").on("click",function(){       
+                reqnum+=20;  
+                $.ajax({
+               url: "http://coral.qq.com/article/1983169624/comment",
+               data:{
+                    commentid :'6280346786642608295',
+                    reqnum:reqnum,
+                    tag:""
+               },
+               dataType:"jsonp",
+               jsonp:"callback",
+               jsonpCallback: "mainComment",
+               success:function(data){
+                var data=data.data;
+                var html=template("resultTemplate",data);
+                $("#contentList").html(html);
+               }
+            });      
+            })
+        })
+    </script>
+</head>
+<body>
+<div id="container">
+<ul id="contentList">
+    <hr>
+</ul>
+<div id="more">加载更多...</div>
+<input type="hidden" id="last" value="0">
+</div>
+
+</body>
+</html>
